@@ -6,6 +6,7 @@ import {
   calculateDartScore,
   drawBoard,
   drawRealisticDart,
+  generateRandomDartPosition,
 } from "./dartboard.helper.js";
 import { convertSVGToPNG } from "./utils.js";
 
@@ -44,18 +45,20 @@ function drawDarts(dartboard) {
   let numberOfDarts = Math.floor(Math.random() * 3) + 1;
 
   for (let i = 0; i < numberOfDarts; i++) {
-    let dartAngle = Math.random() * 360;
-    let distance = Math.random() * 240;
-    let dart_x = 250 + distance * Math.cos((dartAngle * Math.PI) / 180);
-    let dart_y = 250 - distance * Math.sin((dartAngle * Math.PI) / 180);
+    let position = generateRandomDartPosition(250, 250, 200, 0.05);
 
-    drawRealisticDart(dartboard, dart_x, dart_y, dartAngle);
+    drawRealisticDart(
+      dartboard,
+      position.dart_x,
+      position.dart_y,
+      position.dartAngle
+    );
 
-    let scoreWithAngle = calculateDartScore(dart_x, dart_y);
+    let scoreWithAngle = calculateDartScore(position.dart_x, position.dart_y);
 
     dartWithScore.push({
-      dart_x,
-      dart_y,
+      dart_x: position.dart_x,
+      dart_y: position.dart_y,
       angle: scoreWithAngle.angle,
       score: scoreWithAngle.score,
     });
@@ -74,23 +77,21 @@ if (!fs.existsSync(outputDir)) {
 }
 
 // Generate darboards and save images
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 5000; i++) {
   const resp = generateDartboardWithDartsSVG();
 
   // Create file name based on the total score and coordinates of the darts
   const scoreStr = `score(${resp.dartsInfo.totalScore})`;
 
-  let coordStr = "coords(";
+  let coordStr = "coords[";
   resp.dartsInfo.dartWithScore.forEach((dart) => {
-    coordStr += `${Math.round(dart.dart_x * 100) / 100},${
+    coordStr += `(${Math.round(dart.dart_x * 100) / 100},${
       Math.round(dart.dart_y * 100) / 100
-    }-`;
+    }),`;
   });
+  coordStr = coordStr.slice(0, coordStr.length - 1) + "]";
 
-  const pngFileName = path.join(
-    outputDir,
-    `NR${i}_${scoreStr}_${coordStr}.png`
-  );
+  const pngFileName = path.join(outputDir, `${scoreStr}_${coordStr}.png`);
 
   // Convert and save as PNG
   convertSVGToPNG(resp.svg, pngFileName);

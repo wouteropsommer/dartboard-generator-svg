@@ -96,7 +96,7 @@ export function drawRealisticDart(draw, x, y, angle) {
 export function calculateDartScore(dart_x, dart_y) {
   const centerX = 250; // Center x-coordinate of the dartboard
   const centerY = 250; // Center y-coordinate of the dartboard
-  const radius = 100; // Effective radius of the scoring area of the dartboard
+  const radius = 200; // Effective radius of the scoring area of the dartboard
 
   // Calculate the distance and angle from the center
   const dx = dart_x - centerX;
@@ -104,7 +104,8 @@ export function calculateDartScore(dart_x, dart_y) {
   const angle = (Math.atan2(dy, dx) * 180) / Math.PI + 180; // Adjusting angle to be from 0 to 360
 
   // Determine the scoring sector based on the angle
-  if (Math.abs(dx) > radius || Math.abs(dy) > radius) {
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  if (distance > radius) {
     return { score: 0, angle }; // Outside the dartboard
   } else {
     const segmentAngle = 18; // Each segment is 18 degrees
@@ -114,4 +115,31 @@ export function calculateDartScore(dart_x, dart_y) {
     const segmentIndex = Math.floor((angle + 90 + 180 + 9) / segmentAngle) % 20; // Adding 9 degrees to adjust starting point to the top
     return { score: baseScore[segmentIndex], angle };
   }
+}
+
+export function generateRandomDartPosition(
+  centerX,
+  centerY,
+  radius,
+  outsidePercentage = 0.05
+) {
+  // Generate a random angle between 0 and 360 degrees
+  const dartAngle = Math.random() * 360;
+
+  // Determine if the dart should be inside or outside the dartboard
+  const isOutside = Math.random() < outsidePercentage;
+
+  // Generate a random distance
+  let distance;
+  if (isOutside) {
+    distance = radius + Math.random() * 50; // Randomly place outside up to 50 units
+  } else {
+    distance = Math.random() * radius;
+  }
+
+  // Convert polar coordinates to Cartesian coordinates
+  const dart_x = centerX + distance * Math.cos(dartAngle);
+  const dart_y = centerY + distance * Math.sin(dartAngle);
+
+  return { dart_x, dart_y, dartAngle };
 }
