@@ -1,0 +1,17 @@
+{
+  "name": "your-project-name",
+  "version": "1.0.0",
+  "description": "",
+  "main": "svggenerator.js",
+  "type": "module",
+  "scripts": {
+    "start": "node svggenerator.js"
+  },
+  "dependencies": {
+    "@svgdotjs/svg.js": "^3.1.1",
+    "jimp": "^0.22.12",
+    "sharp": "^0.29.3",
+    "svg2img": "^1.0.0-beta.2",
+    "svgdom": "^0.1.0"
+  }
+}
