@@ -13,7 +13,7 @@ import { convertSVGToPNG } from "./utils.js";
 const { random, cos, sin, PI } = Math;
 
 const AMOUNT_OF_DARTS_TO_GENERATE = 1;
-const AMOUNT_OF_IMAGES_TO_GENERATE = 1500;
+const AMOUNT_OF_IMAGES_TO_GENERATE = 3000;
 
 // Register the window and document for svg.js
 const window = createSVGWindow();
@@ -29,13 +29,14 @@ function generateDartboardWithDartsSVG() {
 
   let dartsInfo = drawDarts(draw);
 
-  draw
-    .circle(10)
-    .center(
-      dartsInfo.dartsWithScore[0].dart_x,
-      dartsInfo.dartsWithScore[0].dart_y
-    )
-    .fill("red");
+  //Draw red circle on dart tip
+  // draw
+  //   .circle(10)
+  //   .center(
+  //     dartsInfo.dartsWithScore[0].dart_x,
+  //     dartsInfo.dartsWithScore[0].dart_y
+  //   )
+  //   .fill("red");
 
   return {
     svg: draw,
