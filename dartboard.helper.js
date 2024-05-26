@@ -82,13 +82,6 @@ export function drawRealisticDart(draw, x, y, angle) {
     .fill("#" + Math.floor(Math.random() * 16777215).toString(16))
     .rotate(angle, x, y);
 
-  // Warp the dart to simulate perspective
-  dart.transform({
-    scaleX: 1.0,
-    scaleY: 1.0,
-    origin: `${x} ${y}`,
-  });
-
   // Add the dart to the main draw context
   draw.add(dart);
 }
@@ -138,8 +131,10 @@ export function generateRandomDartPosition(
   }
 
   // Convert polar coordinates to Cartesian coordinates
-  const dart_x = centerX + distance * Math.cos(dartAngle);
-  const dart_y = centerY + distance * Math.sin(dartAngle);
+  let dart_x = centerX + distance * Math.cos(dartAngle);
+  let dart_y = centerY + distance * Math.sin(dartAngle);
 
+  dart_x = Math.round(dart_x);
+  dart_y = Math.round(dart_y);
   return { dart_x, dart_y, dartAngle };
 }

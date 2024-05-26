@@ -12,27 +12,30 @@ import { convertSVGToPNG } from "./utils.js";
 
 const { random, cos, sin, PI } = Math;
 
+const AMOUNT_OF_DARTS_TO_GENERATE = 1;
+const AMOUNT_OF_IMAGES_TO_GENERATE = 1500;
+
 // Register the window and document for svg.js
 const window = createSVGWindow();
 const document = window.document;
 registerWindow(window, document);
 
 function generateDartboardWithDartsSVG() {
-  const draw = SVG(document.documentElement).size(500, 500);
+  const draw = SVG(document.documentElement).size(512, 512);
   draw.clear();
-  draw.rect(500, 500).fill("black");
+  draw.rect(512, 512).fill("black");
 
-  let dartboard = drawBoard(document, draw);
+  drawBoard(document, draw);
 
-  let dartsInfo = drawDarts(dartboard);
+  let dartsInfo = drawDarts(draw);
 
-  // Apply a skew to simulate perspective from one side
-  dartboard.transform({
-    // scaleX between 0.8 and 1.0
-    scaleX: random() > 0.5 ? 0.8 + random() * 0.2 : 0.8 + random() * 0.2 * -1,
-    scaleY: random() > 0.5 ? 0.8 + random() * 0.2 : 0.8 + random() * 0.2 * -1,
-    origin: "0 0",
-  });
+  draw
+    .circle(10)
+    .center(
+      dartsInfo.dartsWithScore[0].dart_x,
+      dartsInfo.dartsWithScore[0].dart_y
+    )
+    .fill("red");
 
   return {
     svg: draw,
@@ -40,15 +43,15 @@ function generateDartboardWithDartsSVG() {
   };
 }
 
-function drawDarts(dartboard) {
-  let dartWithScore = [];
+function drawDarts(svg) {
+  let dartsWithScore = [];
   let numberOfDarts = Math.floor(Math.random() * 3) + 1;
 
-  for (let i = 0; i < numberOfDarts; i++) {
+  for (let i = 0; i < AMOUNT_OF_DARTS_TO_GENERATE; i++) {
     let position = generateRandomDartPosition(250, 250, 200, 0.05);
 
     drawRealisticDart(
-      dartboard,
+      svg,
       position.dart_x,
       position.dart_y,
       position.dartAngle
@@ -56,7 +59,7 @@ function drawDarts(dartboard) {
 
     let scoreWithAngle = calculateDartScore(position.dart_x, position.dart_y);
 
-    dartWithScore.push({
+    dartsWithScore.push({
       dart_x: position.dart_x,
       dart_y: position.dart_y,
       angle: scoreWithAngle.angle,
@@ -65,8 +68,8 @@ function drawDarts(dartboard) {
   }
 
   return {
-    totalScore: dartWithScore.reduce((acc, dart) => acc + dart.score, 0),
-    dartWithScore,
+    totalScore: dartsWithScore.reduce((acc, dart) => acc + dart.score, 0),
+    dartsWithScore: dartsWithScore,
   };
 }
 
@@ -77,14 +80,14 @@ if (!fs.existsSync(outputDir)) {
 }
 
 // Generate darboards and save images
-for (let i = 0; i < 5000; i++) {
+for (let i = 0; i < AMOUNT_OF_IMAGES_TO_GENERATE; i++) {
   const resp = generateDartboardWithDartsSVG();
 
   // Create file name based on the total score and coordinates of the darts
   const scoreStr = `score(${resp.dartsInfo.totalScore})`;
 
   let coordStr = "coords[";
-  resp.dartsInfo.dartWithScore.forEach((dart) => {
+  resp.dartsInfo.dartsWithScore.forEach((dart) => {
     coordStr += `(${Math.round(dart.dart_x * 100) / 100},${
       Math.round(dart.dart_y * 100) / 100
     }),`;
